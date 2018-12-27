@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
+
+    <ImageView
+        android:elevation="1dp"
+        android:src="@drawable/logo"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/home_big"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+
+            <TextView
+                android:id="@+id/home_big_name"
+                android:layout_gravity="center"
+                android:layout_marginTop="-60dp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+
+
+
+            <TextView
+                android:text="Popular"
+                android:padding="5dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/popular"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:text="Action and Adventure"
+                android:padding="5dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/genres1"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:text="Sci-Fi and Fantasy"
+                android:padding="5dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/genres2"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scrollbars="none"/>
+
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+</RelativeLayout>

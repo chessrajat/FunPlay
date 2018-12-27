@@ -1,0 +1,11 @@
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorAccent"
+    android:textSize="20sp"
+    android:gravity="center"
+    android:drawableEnd="@android:drawable/arrow_down_float"
+    android:textColor="@android:color/white"
+    android:padding="5dip"
+    />

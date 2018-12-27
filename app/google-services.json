@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "779148390934",
+    "firebase_url": "https://funplay-81021.firebaseio.com",
+    "project_id": "funplay-81021",
+    "storage_bucket": "funplay-81021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779148390934:android:5631eddc345c93b4",
+        "android_client_info": {
+          "package_name": "com.websbro.funplay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "779148390934-m96f5v8kf3ok1jiufm77cjlfjcoegepl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.websbro.funplay",
+            "certificate_hash": "1bc33837c9b08363c5854517a875b9dd031467c1"
+          }
+        },
+        {
+          "client_id": "779148390934-gr5hg5rf1sme0pqdu7u2enko7jq7m1f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqUFbYPuccbjCgL80d7Y0_L0QdbxqkNJ0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "779148390934-gr5hg5rf1sme0pqdu7u2enko7jq7m1f6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

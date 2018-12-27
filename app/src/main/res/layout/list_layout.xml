@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/download_button"
+        android:background="@color/colorAccent"
+        android:src="@drawable/ic_file_download_50dp"
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
+
+    <LinearLayout
+        android:id="@+id/watch"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="21sp"
+            android:id="@+id/season_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textColor="@color/colorPrimary"
+            android:textSize="15sp"
+            android:id="@+id/episode_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

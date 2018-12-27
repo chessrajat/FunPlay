@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".Activities.EpisodesListActivity">
+
+    <ImageView
+        android:background="@color/colorPrimaryDark"
+        android:scaleType="fitXY"
+        android:id="@+id/episode_image"
+        android:layout_width="match_parent"
+        android:layout_height="180dp" />
+
+
+    <Spinner
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textAlignment="center"
+        android:background="@color/colorAccent"
+        android:id="@+id/season_selector"
+        android:layout_width="200dp"
+        android:layout_height="45dp"/>
+
+    <ListView
+        android:id="@+id/episode_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
