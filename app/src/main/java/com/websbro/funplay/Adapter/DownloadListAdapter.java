@@ -15,6 +15,7 @@ import com.websbro.funplay.Activities.PlayerActivity;
 import com.websbro.funplay.EpisodeDetails;
 import com.websbro.funplay.R;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -65,9 +66,15 @@ public class DownloadListAdapter extends BaseAdapter {
                 animation1.setDuration(1500);
                 v.startAnimation(animation1);
 
-                Intent intent = new Intent(context,PlayerActivity.class);
-                intent.putExtra("link",link);
-                context.startActivity(intent);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+
+                intent.setDataAndType(Uri.parse(link), "video/*");
+
+                context.startActivity(Intent.createChooser(intent, "Play"));
+
+//                Intent intent = new Intent(context,PlayerActivity.class);
+//                intent.putExtra("link",link);
+//                context.startActivity(intent);
             }
         });
 

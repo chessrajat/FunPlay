@@ -1,6 +1,7 @@
 package com.websbro.funplay.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.websbro.funplay.Adapter.DownloadListAdapter;
 import com.websbro.funplay.EpisodeDetails;
@@ -44,7 +46,7 @@ public class DownloadsFragment extends Fragment {
     }
 
     public void getFiles(){
-        File downloadFolder = context.getFilesDir();
+        File downloadFolder = context.getExternalFilesDir("FunPlay");
         File[] files = downloadFolder.listFiles();
 
         downloadedFiles.clear();

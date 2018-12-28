@@ -16,6 +16,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.mkv.MatroskaExtractor;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -23,10 +24,14 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.websbro.funplay.R;
+
+import java.io.File;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -45,7 +50,10 @@ public class PlayerActivity extends AppCompatActivity {
 
         playerView = findViewById(R.id.video_view);
         Intent intent = getIntent();
+
         uri = Uri.parse(intent.getStringExtra("link"));
+
+
         System.out.println(uri);
 
         progressBar = findViewById(R.id.progress);
@@ -131,9 +139,13 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private MediaSource buildMediaSource (Uri uri) {
+
+
         return new ExtractorMediaSource.Factory(
                 new DefaultDataSourceFactory(this,"funPlay")).
                 createMediaSource(uri);
+
+
 
 
     }
