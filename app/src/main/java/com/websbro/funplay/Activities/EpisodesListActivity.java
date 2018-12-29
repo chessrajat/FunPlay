@@ -176,7 +176,7 @@ public class EpisodesListActivity extends AppCompatActivity {
                             System.out.println(completeLink);
                             System.out.println(ep);
                             System.out.println(season);
-                            EpisodeDetails ed = new EpisodeDetails(name, ep, completeLink,season);
+                            EpisodeDetails ed = new EpisodeDetails(name, ep, completeLink,season,tvId);
                             episodeDetails.add(ed);
 
                         }

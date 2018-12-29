@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.view.LayoutInflater;
@@ -22,6 +23,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.websbro.funplay.Activities.HomeActivity;
 import com.websbro.funplay.Activities.PlayerActivity;
 import com.websbro.funplay.EpisodeDetails;
@@ -42,6 +52,7 @@ public class EpisodeAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<EpisodeDetails> details;
+    ArrayList<String> recents;
     static Download download;
 
 
@@ -76,6 +87,7 @@ public class EpisodeAdapter extends BaseAdapter {
         ImageView downloadButton = convertView.findViewById(R.id.download_button);
         TextView season = convertView.findViewById(R.id.season_name);
         TextView episode = convertView.findViewById(R.id.episode_number);
+        recents = new ArrayList<>();
 
         LinearLayout watch = convertView.findViewById(R.id.watch);
         watch.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +96,11 @@ public class EpisodeAdapter extends BaseAdapter {
                 Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
                 animation1.setDuration(1500);
                 v.startAnimation(animation1);
+
+                recents.add(details.get(position).getEpisodeId());
+                recents.add(details.get(position).getSeasonName());
+                addRecentShows();
+
 
                 Intent intent = new Intent(context,PlayerActivity.class);
                 intent.putExtra("link",details.get(position).getEpisodeLink());
@@ -180,6 +197,51 @@ public class EpisodeAdapter extends BaseAdapter {
             }
             return null;
         }
+
+    }
+
+    public void addRecentShows(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        final DocumentReference userReference = db.collection("Users").document(currentUser.getUid());
+
+        userReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                ArrayList<String> fromUser;
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        fromUser = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+
+                        for(int i=0;i<fromUser.size();i++){
+                            if(fromUser.get(i)!=null) {
+                                recents.add(fromUser.get(i));
+                            }
+                            System.out.println(fromUser.get(i));
+                        }
+                        userReference.update("recentTvShows",recents)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        System.out.println("successful");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        System.out.println("failed to addd");
+                                    }
+                                });
+
+                    }
+                }
+            }
+        });
+
     }
 
 

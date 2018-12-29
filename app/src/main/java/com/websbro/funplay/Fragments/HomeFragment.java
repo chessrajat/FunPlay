@@ -17,6 +17,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.websbro.funplay.Activities.EpisodesListActivity;
 import com.websbro.funplay.Adapter.SearchResultAdapter;
@@ -25,7 +31,10 @@ import com.websbro.funplay.Service.RetrofitInstance;
 import com.websbro.funplay.Service.TvDataService;
 import com.websbro.funplay.model.DiscoverGenresResponse;
 import com.websbro.funplay.model.PopularTvResponse;
+import com.websbro.funplay.model.SimilarShows;
 import com.websbro.funplay.model.TvShow;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +51,22 @@ public class HomeFragment extends Fragment {
     RecyclerView popularShows;
     RecyclerView genre1;
     RecyclerView genre2;
+    RecyclerView similar1;
+    RecyclerView similar2;
+    RecyclerView similar3;
+    RecyclerView similar4;
+    RecyclerView similar5;
+
+    TextView similar1Name;
+    TextView similar2Name;
+    TextView similar3Name;
+    TextView similar4Name;
+    TextView similar5Name;
+
     ArrayList<TvShow> popularShowsArrayList;
-    ArrayList<TvShow> genres1ArrayList;
-    ArrayList<TvShow> genres2ArrayList;
+    ArrayList<RecyclerView> views;
+    ArrayList<TextView> viewsName;
+
 
     Random random;
     ImageView bigHome;
@@ -62,20 +84,83 @@ public class HomeFragment extends Fragment {
         bigHome = view.findViewById(R.id.home_big);
         bigHomeName = view.findViewById(R.id.home_big_name);
 
+        initFirestore();
+
         genre1 = view.findViewById(R.id.genres1);
         genre2 = view.findViewById(R.id.genres2);
+        similar1 = view.findViewById(R.id.similar1);
+        similar2 = view.findViewById(R.id.similar2);
+        similar3 = view.findViewById(R.id.similar3);
+        similar4 = view.findViewById(R.id.similar4);
+        similar5 = view.findViewById(R.id.similar5);
+
+        similar1Name = view.findViewById(R.id.similar1_name);
+        similar2Name = view.findViewById(R.id.similar2_name);
+        similar3Name = view.findViewById(R.id.similar3_name);
+        similar4Name = view.findViewById(R.id.similar4_name);
+        similar5Name = view.findViewById(R.id.similar5_name);
+
+        views = new ArrayList<>();
+        views.add(similar1);
+        views.add(similar2);
+        views.add(similar3);
+        views.add(similar4);
+        views.add(similar5);
+
+        viewsName = new ArrayList<>();
+        viewsName.add(similar1Name);
+        viewsName.add(similar2Name);
+        viewsName.add(similar3Name);
+        viewsName.add(similar4Name);
+        viewsName.add(similar5Name);
+
+
+
         popularShows = view.findViewById(R.id.popular);
         popularShowsArrayList = new ArrayList<>();
-        genres1ArrayList = new ArrayList<>();
-        genres2ArrayList = new ArrayList<>();
-        getContent();
-        getGenres2();
-        getPopular();
 
-        initFirestore();
+
+        getContent("10759",genre1);
+        getContent("10765",genre2);
+
+
+
+
+        getPopular();
+        showAllSimilar();
+
 
 
         return view;
+    }
+
+    public void showAllSimilar(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser!=null){
+            DocumentReference documentReference = db.collection("Users").document(currentUser.getUid());
+            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        ArrayList<String> temp = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+                        int j=0;
+                        for(int i=0;i<temp.size();i+=2){
+                            if (j < 5) {
+                                String id = temp.get(i);
+                                String name = temp.get(i+1);
+                                getSililar(id,name,views.get(j),viewsName.get(j));
+                                j++;
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
     }
 
 
@@ -84,24 +169,25 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public void getContent() {
+    public void getContent(String genId, final RecyclerView recyclerView) {
         TvDataService tvDataService = RetrofitInstance.getService();
-        Call<DiscoverGenresResponse> discoverGenresResponseCall = tvDataService.getGenreShows(getString(R.string.api_key), "10759");
+        Call<DiscoverGenresResponse> discoverGenresResponseCall = tvDataService.getGenreShows(getString(R.string.api_key), genId);
 
         discoverGenresResponseCall.enqueue(new Callback<DiscoverGenresResponse>() {
             @Override
             public void onResponse(Call<DiscoverGenresResponse> call, Response<DiscoverGenresResponse> response) {
+                ArrayList<TvShow> genreEpisodeList = new ArrayList<>();
                 DiscoverGenresResponse discoverGenresResponse = response.body();
                 if (discoverGenresResponse != null && discoverGenresResponse.getResults() != null) {
                     List<TvShow> tv = discoverGenresResponse.getResults();
                     for (TvShow t : tv) {
                         if (t.getPosterPath() != null) {
-                            System.out.println(t.getName());
-                            genres1ArrayList.add(t);
-                            showgenre1();
+                            genreEpisodeList.add(t);
+                            showinRecycler(genreEpisodeList,recyclerView);
 
                         }
                     }
+
                 }
             }
 
@@ -112,33 +198,40 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void getGenres2() {
+    public void getSililar(String tvId, final String showName, final RecyclerView recyclerView, final TextView textView){
         TvDataService tvDataService = RetrofitInstance.getService();
-        Call<DiscoverGenresResponse> discoverGenresResponseCall = tvDataService.getGenreShows(getString(R.string.api_key), "10765");
+        Call<SimilarShows> similarShowsCall = tvDataService.getSililar(tvId,getString(R.string.api_key));
 
-        discoverGenresResponseCall.enqueue(new Callback<DiscoverGenresResponse>() {
+        similarShowsCall.enqueue(new Callback<SimilarShows>() {
             @Override
-            public void onResponse(Call<DiscoverGenresResponse> call, Response<DiscoverGenresResponse> response) {
-                DiscoverGenresResponse discoverGenresResponse = response.body();
-                if (discoverGenresResponse != null && discoverGenresResponse.getResults() != null) {
-                    List<TvShow> tv = discoverGenresResponse.getResults();
-                    for (TvShow t : tv) {
-                        if (t.getPosterPath() != null) {
-                            System.out.println(t.getName());
-                            genres2ArrayList.add(t);
-                            showgenre2();
+            public void onResponse(Call<SimilarShows> call, Response<SimilarShows> response) {
+                ArrayList<TvShow> similarShowlist = new ArrayList<>();
+                SimilarShows similarShows = response.body();
+                System.out.println(similarShows);
+                if(similarShows !=null && similarShows.getResults() !=null){
+                    List<TvShow> tv = similarShows.getResults();
+                    for(TvShow t : tv){
+                        if(t.getPosterPath()!=null){
+                            similarShowlist.add(t);
+                            showinRecycler(similarShowlist,recyclerView);
 
                         }
+                    }
+                    if(similarShowlist.size()>0){
+                        textView.setText("Because you watched - \n" + showName);
+                        textView.setVisibility(View.VISIBLE);
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<DiscoverGenresResponse> call, Throwable t) {
+            public void onFailure(Call<SimilarShows> call, Throwable t) {
 
             }
         });
     }
+
+
 
     public void getPopular(){
         TvDataService tvDataService = RetrofitInstance.getService();
@@ -153,7 +246,7 @@ public class HomeFragment extends Fragment {
                     for (TvShow t : tv ){
                         if(t.getPosterPath()!=null){
                             popularShowsArrayList.add(t);
-                            showPopularShows();
+                            showinRecycler(popularShowsArrayList,popularShows);
                         }
                     }
                     final int rand = random.nextInt(popularShowsArrayList.size());
@@ -193,32 +286,15 @@ public class HomeFragment extends Fragment {
 
 
 
-    public void showgenre1(){
-        contentFiller = new SearchResultAdapter(context,genres1ArrayList);
+    public void showinRecycler(ArrayList<TvShow> genres,RecyclerView recyclerView){
+        contentFiller = new SearchResultAdapter(context,genres);
 
-        genre1.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
 
-        genre1.setItemAnimator(new DefaultItemAnimator());
-        genre1.setAdapter(contentFiller);
-        genre1.getAdapter().notifyDataSetChanged();
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(contentFiller);
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
-    public void showgenre2(){
-        contentFiller = new SearchResultAdapter(context,genres2ArrayList);
 
-        genre2.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
-
-        genre2.setItemAnimator(new DefaultItemAnimator());
-        genre2.setAdapter(contentFiller);
-        genre2.getAdapter().notifyDataSetChanged();
-    }
-    public void showPopularShows(){
-        contentFiller = new SearchResultAdapter(context,popularShowsArrayList);
-
-        popularShows.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
-
-        popularShows.setItemAnimator(new DefaultItemAnimator());
-        popularShows.setAdapter(contentFiller);
-        popularShows.getAdapter().notifyDataSetChanged();
-    }
 
 }

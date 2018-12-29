@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.websbro.funplay.Activities.PlayerActivity;
 import com.websbro.funplay.EpisodeDetails;
 import com.websbro.funplay.R;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.net.URI;
@@ -51,6 +54,7 @@ public class DownloadListAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.download_list,parent,false);
         }
 
+        LinearLayout linearLayout = convertView.findViewById(R.id.download_list_layout);
         TextView textView = convertView.findViewById(R.id.download_name);
         final String link = downloadedShows.get(position).getEpisodeLink();
 
@@ -59,7 +63,7 @@ public class DownloadListAdapter extends BaseAdapter {
         name = name.substring(0,name.length()-4);
         textView.setText(name);
 
-        textView.setOnClickListener(new View.OnClickListener() {
+        linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Animation animation1 = new AlphaAnimation(0.3f, 1.0f);

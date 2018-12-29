@@ -22,7 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.websbro.funplay.R;
 import com.websbro.funplay.User;
 
@@ -49,6 +52,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 .build();
 
         db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mAuth = FirebaseAuth.getInstance();
@@ -77,13 +84,35 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        CollectionReference users = db.collection("Users");
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        final CollectionReference users = db.collection("Users");
+
+
         if(currentUser!=null){
-            User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
-                    currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),new ArrayList<String>());
-            users.document(currentUser.getUid()).set(user);
+            final ArrayList<String> recentTvShows = new ArrayList<>();
+            DocumentReference documentReference =users.document(currentUser.getUid());
+            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if(documentSnapshot.exists()){
+                            ArrayList<String> temp = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+                            if(temp!=null) {
+                                recentTvShows.addAll(temp);
+                            }
+                        }
+
+                        User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
+                                currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
+                        users.document(currentUser.getUid()).set(user);
+                    }
+                }
+            });
+
             updateUi();
+
+
 
         }
     }
@@ -120,13 +149,31 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser currentUser = mAuth.getCurrentUser();
-                            CollectionReference users = db.collection("Users");
+                            final FirebaseUser currentUser = mAuth.getCurrentUser();
+                            final CollectionReference users = db.collection("Users");
                             if(currentUser!=null){
-                                User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
-                                        currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),new ArrayList<String>());
-                                users.document(currentUser.getUid()).set(user);
-                                updateUi();
+                                final ArrayList<String> recentTvShows = new ArrayList<>();
+                                DocumentReference documentReference =users.document(currentUser.getUid());
+                                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if(task.isSuccessful()){
+                                            DocumentSnapshot documentSnapshot = task.getResult();
+                                            System.out.println(documentSnapshot);
+                                            if(documentSnapshot.exists()){
+                                                ArrayList<String> temp = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+                                                if(temp!=null) {
+                                                    recentTvShows.addAll(temp);
+                                                }
+                                            }
+                                        }
+                                        User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
+                                                currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
+                                        users.document(currentUser.getUid()).set(user);
+                                        updateUi();
+                                    }
+                                });
+
 
                             }
                             updateUi();

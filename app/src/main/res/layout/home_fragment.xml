@@ -65,6 +65,107 @@
                 android:scrollbars="none"/>
 
             <TextView
+                android:visibility="gone"
+                android:id="@+id/similar1_name"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/similar1"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/similar2_name"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/similar2"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"/>
+
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/similar3_name"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/similar3"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/similar4_name"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/similar4"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/similar5_name"
+                android:padding="5dp"
+                android:paddingTop="20dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/similar5"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"/>
+
+            <TextView
                 android:text="Action and Adventure"
                 android:padding="5dp"
                 android:layout_marginLeft="10dp"

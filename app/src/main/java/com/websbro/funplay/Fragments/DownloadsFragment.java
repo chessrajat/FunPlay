@@ -53,7 +53,7 @@ public class DownloadsFragment extends Fragment {
 
         for (int i = 0; i < files.length; i++) {
             File currFile = files[i];
-            EpisodeDetails thisFile = new EpisodeDetails(currFile.getName(),null,currFile.getAbsolutePath(),null);
+            EpisodeDetails thisFile = new EpisodeDetails(currFile.getName(),null,currFile.getAbsolutePath(),null,null);
             downloadedFiles.add(thisFile);
 
 

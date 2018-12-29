@@ -2,19 +2,27 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:id="@+id/download_list_layout"
+    android:orientation="horizontal"
     android:padding="12dp"
     android:layout_margin="4dp"
     android:background="@color/colorAccent">
 
+        <ImageView
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <TextView
+            android:id="@+id/download_name"
             android:padding="10dp"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             android:textSize="21sp"
-            android:id="@+id/download_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" >
+
+        </TextView>
 
 
 </LinearLayout>
