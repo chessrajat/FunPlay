@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,11 +23,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.websbro.funplay.Activities.EpisodesListActivity;
 import com.websbro.funplay.Adapter.SearchResultAdapter;
+import com.websbro.funplay.C;
+import com.websbro.funplay.CheckConnection;
 import com.websbro.funplay.R;
 import com.websbro.funplay.Service.RetrofitInstance;
 import com.websbro.funplay.Service.TvDataService;
@@ -39,6 +44,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,12 +73,22 @@ public class HomeFragment extends Fragment {
     ArrayList<RecyclerView> views;
     ArrayList<TextView> viewsName;
 
+    FirebaseFirestore db ;
+    CollectionReference tvCollection;
+
 
     Random random;
     ImageView bigHome;
     TextView bigHomeName;
+    WebView homeAdView1;
+    WebView homeADView2;
 
-    FirebaseFirestore db;
+    TextView lastWatched;
+    TextView lastWatchedEpisode;
+
+    FirebaseAuth mAuth;
+
+
 
     @Nullable
     @Override
@@ -80,11 +96,17 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.home_fragment,container,false);
         context = getActivity();
 
+
         random = new Random();
         bigHome = view.findViewById(R.id.home_big);
         bigHomeName = view.findViewById(R.id.home_big_name);
+        homeAdView1 = view.findViewById(R.id.home_ad1);
+        homeADView2 = view.findViewById(R.id.home_ad2);
 
         initFirestore();
+
+        db = FirebaseFirestore.getInstance();
+        tvCollection = db.collection("TvShows");
 
         genre1 = view.findViewById(R.id.genres1);
         genre2 = view.findViewById(R.id.genres2);
@@ -114,7 +136,18 @@ public class HomeFragment extends Fragment {
         viewsName.add(similar4Name);
         viewsName.add(similar5Name);
 
+        lastWatchedEpisode = view.findViewById(R.id.last_watched_episode);
+        lastWatched = view.findViewById(R.id.last_watched);
 
+        //ads
+        if(C.isConnected(context)) {
+            WebSettings homeAd1 = homeAdView1.getSettings();
+            homeAd1.setJavaScriptEnabled(true);
+            homeAdView1.loadUrl("https://downloadbro.com/ad1/");
+            WebSettings homeAd2 = homeADView2.getSettings();
+            homeAd2.setJavaScriptEnabled(true);
+            homeADView2.loadUrl("https://downloadbro.com/ad1/");
+        }
 
         popularShows = view.findViewById(R.id.popular);
         popularShowsArrayList = new ArrayList<>();
@@ -134,9 +167,9 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+
     public void showAllSimilar(){
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser!=null){
@@ -147,7 +180,14 @@ public class HomeFragment extends Fragment {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if(documentSnapshot.exists()){
                         ArrayList<String> temp = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+                        String lastWatched1 = documentSnapshot.getString("watching");
+                        if(lastWatched!=null && lastWatched.length()>0){
+                            lastWatchedEpisode.setText(lastWatched1);
+                            lastWatched.setVisibility(View.VISIBLE);
+                            lastWatchedEpisode.setVisibility(View.VISIBLE);
+                        }
                         int j=0;
+                        System.out.println("temp " + temp.size());
                         for(int i=0;i<temp.size();i+=2){
                             if (j < 5) {
                                 String id = temp.get(i);
@@ -176,14 +216,30 @@ public class HomeFragment extends Fragment {
         discoverGenresResponseCall.enqueue(new Callback<DiscoverGenresResponse>() {
             @Override
             public void onResponse(Call<DiscoverGenresResponse> call, Response<DiscoverGenresResponse> response) {
-                ArrayList<TvShow> genreEpisodeList = new ArrayList<>();
+                final ArrayList<TvShow> genreEpisodeList = new ArrayList<>();
                 DiscoverGenresResponse discoverGenresResponse = response.body();
                 if (discoverGenresResponse != null && discoverGenresResponse.getResults() != null) {
                     List<TvShow> tv = discoverGenresResponse.getResults();
-                    for (TvShow t : tv) {
+                    for (final TvShow t : tv) {
                         if (t.getPosterPath() != null) {
-                            genreEpisodeList.add(t);
-                            showinRecycler(genreEpisodeList,recyclerView);
+                            DocumentReference documentReference = tvCollection.document(t.getId().toString());
+                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()) {
+                                            genreEpisodeList.add(t);
+                                            showinRecycler(genreEpisodeList,recyclerView);
+                                        }else {
+                                            System.out.println("not available");
+                                        }
+                                    }
+                                }
+                            });
+
+//genreEpisodeList.add(t);
+
 
                         }
                     }
@@ -205,22 +261,37 @@ public class HomeFragment extends Fragment {
         similarShowsCall.enqueue(new Callback<SimilarShows>() {
             @Override
             public void onResponse(Call<SimilarShows> call, Response<SimilarShows> response) {
-                ArrayList<TvShow> similarShowlist = new ArrayList<>();
+                final ArrayList<TvShow> similarShowlist = new ArrayList<>();
                 SimilarShows similarShows = response.body();
                 System.out.println(similarShows);
                 if(similarShows !=null && similarShows.getResults() !=null){
                     List<TvShow> tv = similarShows.getResults();
-                    for(TvShow t : tv){
+                    for(final TvShow t : tv){
                         if(t.getPosterPath()!=null){
-                            similarShowlist.add(t);
-                            showinRecycler(similarShowlist,recyclerView);
+                            DocumentReference documentReference = tvCollection.document(t.getId().toString());
+                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()) {
+                                            similarShowlist.add(t);
+                                            showinRecycler(similarShowlist,recyclerView);
+                                            if(similarShowlist.size()>0){
+                                                textView.setText("Because you watched - \n" + showName);
+                                                textView.setVisibility(View.VISIBLE);
+                                            }
+                                        }else {
+                                            System.out.println("not available");
+                                        }
+                                    }
+                                }
+                            });
+
 
                         }
                     }
-                    if(similarShowlist.size()>0){
-                        textView.setText("Because you watched - \n" + showName);
-                        textView.setVisibility(View.VISIBLE);
-                    }
+
                 }
             }
 
@@ -243,43 +314,63 @@ public class HomeFragment extends Fragment {
                 PopularTvResponse popularTvResponse = response.body();
                 if(popularTvResponse!=null && popularTvResponse.getResults()!=null){
                     List<TvShow> tv = popularTvResponse.getResults();
-                    for (TvShow t : tv ){
+                    for (final TvShow t : tv ){
                         if(t.getPosterPath()!=null){
-                            popularShowsArrayList.add(t);
-                            showinRecycler(popularShowsArrayList,popularShows);
+
+                            DocumentReference documentReference = tvCollection.document(t.getId().toString());
+                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()) {
+                                            popularShowsArrayList.add(t);
+                                            showinRecycler(popularShowsArrayList,popularShows);
+                                            showBigImage();
+                                        }else {
+                                            System.out.println("not available");
+                                        }
+                                    }
+                                }
+                            });
+
                         }
                     }
-                    final int rand = random.nextInt(popularShowsArrayList.size());
 
-                    bigHomeName.setText(popularShowsArrayList.get(rand).getName());
-                    String imagePath = context.getString(R.string.image_path) + popularShowsArrayList.get(rand).getBackdropPath();
-                    RequestOptions requestOptions = new RequestOptions();
-                    requestOptions.placeholder(R.drawable.ic_loading_circles);
-                    Glide.with(context)
-                            .load(imagePath)
-                            .apply(requestOptions)
-                            .into(bigHome);
-                    bigHome.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String tvId = popularShowsArrayList.get(rand).getId().toString();
-                            String posterUrl = popularShowsArrayList.get(rand).getBackdropPath().toString();
-                            String name = bigHomeName.getText().toString();
-
-                            Intent intent = new Intent(context,EpisodesListActivity.class);
-                            intent.putExtra("tvId",tvId);
-                            intent.putExtra("posterUrl",posterUrl);
-                            intent.putExtra("name",name);
-                            context.startActivity(intent);
-                        }
-                    });
-
+                    //
                 }
             }
 
             @Override
             public void onFailure(Call<PopularTvResponse> call, Throwable t) {
 
+            }
+        });
+    }
+
+    public void showBigImage(){
+        final int rand = random.nextInt(popularShowsArrayList.size());
+
+        bigHomeName.setText(popularShowsArrayList.get(rand).getName());
+        String imagePath = context.getString(R.string.image_path) + popularShowsArrayList.get(rand).getBackdropPath();
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.ic_loading_circles);
+        Glide.with(context)
+                .load(imagePath)
+                .apply(requestOptions)
+                .into(bigHome);
+        bigHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tvId = popularShowsArrayList.get(rand).getId().toString();
+                String posterUrl = popularShowsArrayList.get(rand).getBackdropPath().toString();
+                String name = bigHomeName.getText().toString();
+
+                Intent intent = new Intent(context,EpisodesListActivity.class);
+                intent.putExtra("tvId",tvId);
+                intent.putExtra("posterUrl",posterUrl);
+                intent.putExtra("name",name);
+                context.startActivity(intent);
             }
         });
     }

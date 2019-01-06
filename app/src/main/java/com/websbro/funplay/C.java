@@ -4,9 +4,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.websbro.funplay.Activities.HomeActivity;
 
 import java.util.TimerTask;
@@ -17,6 +23,7 @@ public class C {
     public static String CHANNEL_NAME = "download";
     public static String CHANNEL_DES = "Downloading video content";
     public static String CHANNEL_ID = "1998";
+    public static boolean GO_OFFLINE = false;
 
     public static boolean isConnected(Context context) {
 
@@ -32,6 +39,8 @@ public class C {
         } else
             return false;
     }
+
+
 
 
 

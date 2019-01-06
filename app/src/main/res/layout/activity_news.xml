@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".Activities.NewsActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/news1"
+            android:padding="5dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/news2"
+            android:padding="5dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/news3"
+            android:padding="5dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/news4"
+            android:padding="5dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/news5"
+            android:padding="5dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</ScrollView>

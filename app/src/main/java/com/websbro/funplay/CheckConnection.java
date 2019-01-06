@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.websbro.funplay.Activities.HomeActivity;
 import com.websbro.funplay.Fragments.HomeFragment;
 
+import java.util.Timer;
 import java.util.TimerTask;
 
 public class CheckConnection extends TimerTask {
@@ -41,10 +42,10 @@ public class CheckConnection extends TimerTask {
                     public void run() {
                         if(dialogBox==null) {
                             AlertDialog.Builder myDialogBox = new AlertDialog.Builder(context);
-                            myDialogBox.setTitle("Alert");
-                            myDialogBox.setMessage("alert text");
+                            myDialogBox.setTitle("No Internet");
+                            myDialogBox.setMessage("Check your internet connection");
                             myDialogBox.setCancelable(false);
-                            myDialogBox.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            myDialogBox.setPositiveButton("try again", new DialogInterface.OnClickListener() {
 
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     dialog.dismiss();
@@ -53,10 +54,12 @@ public class CheckConnection extends TimerTask {
                                 }
 
                             });
-                            myDialogBox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            myDialogBox.setNegativeButton("exit", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     dialogBox=null;
+                                    C.GO_OFFLINE = true;
+                                    System.exit(0);
                                 }
                             });
 

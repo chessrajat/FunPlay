@@ -2,4 +2,6 @@
     <string name="app_name">FunPlay</string>
     <string name="image_path">https://image.tmdb.org/t/p/w500</string>
     <string name="api_key">89cd0edf591ce31fb52d9facb88add8d</string>
+
+
 </resources>

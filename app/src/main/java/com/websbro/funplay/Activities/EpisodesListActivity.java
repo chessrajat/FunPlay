@@ -4,11 +4,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -28,11 +31,17 @@ import com.websbro.funplay.CheckConnection;
 import com.websbro.funplay.EpisodeDetails;
 import com.websbro.funplay.R;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Timer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EpisodesListActivity extends AppCompatActivity {
 
@@ -67,12 +76,14 @@ public class EpisodesListActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this,R.layout.spinner_layout,spinnerContent);
         seasonSelector.setAdapter(adapter);
 
+
         db = FirebaseFirestore.getInstance();
 
-        Timer timer = new Timer();
-        final int MILLISECONDS = 4000; //4 seconds
-        timer.schedule(new CheckConnection(EpisodesListActivity.this), 0, MILLISECONDS);
-
+        if(!C.GO_OFFLINE) {
+            Timer timer = new Timer();
+            final int MILLISECONDS = 4000; //4 seconds
+            timer.schedule(new CheckConnection(EpisodesListActivity.this), 0, MILLISECONDS);
+        }
 
         createNotificationChannel();
 
@@ -173,6 +184,9 @@ public class EpisodesListActivity extends AppCompatActivity {
                             String link = episode.get(e);
                             String completeLink = link + token;
 
+
+
+
                             System.out.println(completeLink);
                             System.out.println(ep);
                             System.out.println(season);
@@ -205,6 +219,8 @@ public class EpisodesListActivity extends AppCompatActivity {
         episodeAdapter = new EpisodeAdapter(this,episodeDetails);
         episodeList.setAdapter(episodeAdapter);
     }
+
+
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because

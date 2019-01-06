@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".Activities.FeedbackActivity">
+
+
+    <EditText
+        android:padding="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:id="@+id/feedback"
+        android:layout_marginTop="20dp"
+        android:inputType="textMultiLine"
+        android:gravity="top"
+        android:maxLines="20"
+        android:textColorHint="@color/colorPrimary"
+        android:hint="Your valueable feedback"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+
+    <Button
+        android:id="@+id/feedback_submit"
+        android:background="@drawable/rounded_text_view"
+        android:layout_below="@+id/feedback"
+        android:layout_marginTop="30dp"
+        android:text="Submit"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

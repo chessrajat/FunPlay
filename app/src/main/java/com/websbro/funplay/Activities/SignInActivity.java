@@ -36,6 +36,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     GoogleSignInClient mGoogleSignInClient;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
+    String watching = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         final CollectionReference users = db.collection("Users");
 
 
+
+
         if(currentUser!=null){
             final ArrayList<String> recentTvShows = new ArrayList<>();
             DocumentReference documentReference =users.document(currentUser.getUid());
@@ -98,13 +101,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         DocumentSnapshot documentSnapshot = task.getResult();
                         if(documentSnapshot.exists()){
                             ArrayList<String> temp = (ArrayList<String>)documentSnapshot.get("recentTvShows");
+                            watching = documentSnapshot.getString("watching");
                             if(temp!=null) {
                                 recentTvShows.addAll(temp);
                             }
                         }
 
                         User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
-                                currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
+                                currentUser.getPhotoUrl().toString(),watching,new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
                         users.document(currentUser.getUid()).set(user);
                     }
                 }
@@ -168,7 +172,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                             }
                                         }
                                         User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
-                                                currentUser.getPhotoUrl().toString(),new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
+                                                currentUser.getPhotoUrl().toString(),null,new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
                                         users.document(currentUser.getUid()).set(user);
                                         updateUi();
                                     }

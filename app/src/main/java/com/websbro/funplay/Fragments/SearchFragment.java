@@ -11,9 +11,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.websbro.funplay.Adapter.SearchResultAdapter;
 import com.websbro.funplay.R;
 import com.websbro.funplay.Service.RetrofitInstance;
@@ -36,6 +44,11 @@ public class SearchFragment extends Fragment {
     ArrayList<TvShow> tvShowArrayList;
     SearchResultAdapter searchResultAdapter;
     Context context;
+    TextView searchAd;
+
+    FirebaseFirestore db;
+    CollectionReference tvCollection;
+
 
     @Nullable
     @Override
@@ -47,20 +60,23 @@ public class SearchFragment extends Fragment {
         searchView.onActionViewExpanded();
         context = getActivity();
 
+        searchAd = view.findViewById(R.id.search_ad);
 
 
+        db = FirebaseFirestore.getInstance();
+        tvCollection = db.collection("TvShows");
         tvShowArrayList= new ArrayList<>();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 getSearchResult(query);
+                searchAd.setVisibility(View.VISIBLE);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchInfoText.setVisibility(View.GONE);
                 return false;
             }
         });
@@ -83,15 +99,40 @@ public class SearchFragment extends Fragment {
                     if(searchResponse.getResults().size()==0){
                         searchInfoText.setText("Oh! we don't have that");
                         searchInfoText.setVisibility(View.VISIBLE);
+                        searchAd.setVisibility(View.GONE);
                     }
-                    List<TvShow> tv = searchResponse.getResults();
+                    final List<TvShow> tv = searchResponse.getResults();
 
-                    for( TvShow t : tv){
-                        if(t.getPosterPath()!=null){
-                            tvShowArrayList.add(t);
-                            showOnRecyclerView();
+                    for( int t=0;t<tv.size();t++){
+                        if(tv.get(t).getPosterPath()!=null){
+
+                            DocumentReference documentReference = tvCollection.document(tv.get(t).getId().toString());
+                            final int finalT = t;
+                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()) {
+                                            tvShowArrayList.add(tv.get(finalT));
+                                            showOnRecyclerView();
+                                        }else {
+                                            System.out.println("not available");
+                                        }
+                                    }
+
+                                }
+
+                            });
+
+
                         }
+                        showOnRecyclerView();
+
+
+
                     }
+
                 }
             }
 
@@ -101,6 +142,7 @@ public class SearchFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
+
     }
 
     public void showOnRecyclerView(){

@@ -9,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.websbro.funplay.Activities.DMCA;
+import com.websbro.funplay.Activities.FeedbackActivity;
+import com.websbro.funplay.Activities.NewsActivity;
 import com.websbro.funplay.Activities.SignInActivity;
 import com.websbro.funplay.R;
 
@@ -28,6 +33,9 @@ public class MoreFragment extends Fragment {
     ImageView profileImage;
     TextView profileName;
     TextView dmca;
+    TextView feedback;
+    TextView share;
+    TextView news;
     TextView logOut;
     Context context;
 
@@ -41,17 +49,82 @@ public class MoreFragment extends Fragment {
         profileImage = view.findViewById(R.id.profile_image);
         profileName = view.findViewById(R.id.profile_name);
         dmca = view.findViewById(R.id.dmca);
+        share = view.findViewById(R.id.share);
+        news = view.findViewById(R.id.news);
+        feedback = view.findViewById(R.id.more_feedback);
         logOut = view.findViewById(R.id.log_out);
         context = getActivity();
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+
         getProfile();
+
+        dmca.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                animation1.setDuration(800);
+                v.startAnimation(animation1);
+
+                Intent intent = new Intent(context,DMCA.class);
+                context.startActivity(intent);
+            }
+        });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                animation1.setDuration(800);
+                v.startAnimation(animation1);
+
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
+                    String sAux = "\nBest appication to watch Tv shows for free. New added daily\n\n";
+                    sAux = sAux + "http://funplay.gq/assets/funplay.apk";
+                    i.putExtra(Intent.EXTRA_TEXT, sAux);
+                    startActivity(Intent.createChooser(i, "Share"));
+                } catch(Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        });
+
+        feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                animation1.setDuration(800);
+                v.startAnimation(animation1);
+
+                Intent intent = new Intent(context,FeedbackActivity.class);
+                context.startActivity(intent);
+            }
+        });
+
+        news.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                animation1.setDuration(800);
+                v.startAnimation(animation1);
+
+                Intent intent = new Intent(context,NewsActivity.class);
+                context.startActivity(intent);
+            }
+        });
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                animation1.setDuration(800);
+                v.startAnimation(animation1);
+
                 mAuth.signOut();
                 Intent intent = new Intent(context,SignInActivity.class);
                 context.startActivity(intent);

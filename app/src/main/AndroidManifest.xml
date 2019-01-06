@@ -5,17 +5,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".Activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -28,11 +28,16 @@
         <activity
             android:name=".Activities.SignInActivity"
             android:theme="@style/SplashTheme" />
-        <activity android:name=".Activities.HomeActivity"
-            android:screenOrientation="sensorPortrait"/>
+        <activity
+            android:name=".Activities.HomeActivity"
+            android:screenOrientation="sensorPortrait" />
         <activity android:name=".Activities.EpisodesListActivity" />
-        <activity android:name=".Activities.PlayerActivity"
-            android:screenOrientation="sensorLandscape"></activity>
+        <activity
+            android:name=".Activities.PlayerActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity android:name=".Activities.DMCA" />
+        <activity android:name=".Activities.FeedbackActivity" />
+        <activity android:name=".Activities.NewsActivity"></activity>
     </application>
 
 </manifest>

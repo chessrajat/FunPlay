@@ -27,6 +27,13 @@
 
     </LinearLayout>
 
+    <ScrollView
+        android:layout_below="@+id/profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ScrollView>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_marginTop="20dp"
@@ -35,6 +42,8 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:clickable="true"
+            android:focusable="true"
             android:id="@+id/dmca"
             android:background="@color/colorAccent"
             android:textColor="@color/colorPrimary"
@@ -42,7 +51,53 @@
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:textSize="20sp"
-            android:text="DMCA"
+            android:text="DMCA and Privacy Policy"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/share"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:textSize="20sp"
+            android:text="Share us"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+
+
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/news"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:textSize="20sp"
+            android:text="News"
+            android:drawableEnd="@drawable/ic_error_black_24dp"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/more_feedback"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:textSize="20sp"
+            android:text="Feedback"
             android:layout_width="match_parent"
             android:layout_height="70dp" />
 
@@ -61,5 +116,15 @@
 
 
     </LinearLayout>
+
+    <TextView
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="v0.5"
+        android:padding="2dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.websbro.funplay.Activities.EpisodesListActivity;
 import com.websbro.funplay.Activities.HomeActivity;
 import com.websbro.funplay.Activities.PlayerActivity;
 import com.websbro.funplay.EpisodeDetails;
@@ -42,9 +44,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.websbro.funplay.C.CHANNEL_ID;
 
@@ -54,6 +61,9 @@ public class EpisodeAdapter extends BaseAdapter {
     private ArrayList<EpisodeDetails> details;
     ArrayList<String> recents;
     static Download download;
+
+    String watching = "";
+    String link = null;
 
 
     public EpisodeAdapter(Context context, ArrayList<EpisodeDetails> details) {
@@ -89,25 +99,42 @@ public class EpisodeAdapter extends BaseAdapter {
         TextView episode = convertView.findViewById(R.id.episode_number);
         recents = new ArrayList<>();
 
-        LinearLayout watch = convertView.findViewById(R.id.watch);
-        watch.setOnClickListener(new View.OnClickListener() {
+        final LinearLayout watch = convertView.findViewById(R.id.watch);
+        final View.OnClickListener watchListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(context,"Wait....",Toast.LENGTH_SHORT).show();
+                watch.setOnLongClickListener(null);
                 Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
                 animation1.setDuration(1500);
                 v.startAnimation(animation1);
 
+
                 recents.add(details.get(position).getEpisodeId());
                 recents.add(details.get(position).getSeasonName());
+                watching = details.get(position).getSeasonName()+" "+details.get(position).getSeason()+" "+details.get(position).getEpisodeNumber();
                 addRecentShows();
 
+                final String episodeLink = details.get(position).getEpisodeLink();
+                if(episodeLink.startsWith("http://datadep.site")){
 
-                Intent intent = new Intent(context,PlayerActivity.class);
-                intent.putExtra("link",details.get(position).getEpisodeLink());
-                context.startActivity(intent);
+                   link = extractLink(episodeLink);
+                   Intent intent = new Intent(context, PlayerActivity.class);
+                   intent.putExtra("link", link);
+                   intent.putExtra("title",details.get(position).getSeasonName()+" "+details.get(position).getSeason()+" "+details.get(position).getEpisodeNumber());
+                   context.startActivity(intent);
 
+
+                }else if(episodeLink.startsWith("http://bia2vip.site")){
+                    Intent intent = new Intent(context,PlayerActivity.class);
+                    intent.putExtra("link",episodeLink);
+                    context.startActivity(intent);
+                }
             }
-        });
+        };
+
+        watch.setOnClickListener(watchListener);
+
 
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,13 +150,23 @@ public class EpisodeAdapter extends BaseAdapter {
                     tempFileName = tempFileName.replaceAll("\\(Bia2Movies\\)","");
                     tempFileName = tempFileName.replaceAll("%20","");
                     tempFileName = tempFileName.replaceAll("\\?token=0F86B08B78839F00F11DC297281AFCB9","");
+                }else if(url.startsWith("http://datadep.site")){
+                    tempFileName = tempFileName.replaceAll(".480p","");
+                    tempFileName = tempFileName.replaceAll("%20","");
+                    tempFileName = tempFileName.replaceAll(".Grabthebeast","");
+                    tempFileName = tempFileName.replaceAll("\\?token=0F86B08B78839F00F11DC297281AFCB9","");
                 }
 
                 Toast.makeText(context,"Download Started",Toast.LENGTH_LONG).show();
                 if(download.getStatus()==AsyncTask.Status.RUNNING){
                     Toast.makeText(context,"Another download running",Toast.LENGTH_LONG).show();
                 }else {
-                    download.execute(url, tempFileName);
+                    if(url.startsWith("http://bia2vip.site")) {
+                        download.execute(url, tempFileName);
+                    }else if(url.startsWith("http://datadep.site")){
+                        String urlChange = extractLink(url);
+                        download.execute(urlChange,tempFileName);
+                    }
                 }
 
             }
@@ -139,7 +176,6 @@ public class EpisodeAdapter extends BaseAdapter {
 
         season.setText(details.get(position).getSeasonName());
         episode.setText(details.get(position).getSeason()+" "+details.get(position).getEpisodeNumber());
-
 
         return convertView;
 
@@ -156,9 +192,13 @@ public class EpisodeAdapter extends BaseAdapter {
                 URL url = new URL(strings[0]);
                 URLConnection conn = url.openConnection();
                 int contentLength = conn.getContentLength();
-                DataInputStream dataInputStream = new DataInputStream(url.openStream());
 
                 File file = new File(context.getExternalFilesDir("FunPlay"),strings[1]);
+
+                DataInputStream dataInputStream = new DataInputStream(url.openStream());
+                DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
+
+
 
                 System.out.println("download start");
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -170,14 +210,22 @@ public class EpisodeAdapter extends BaseAdapter {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                 notificationManager.notify(6, mBuilder.build());
 
-                byte[] buffer = new byte[contentLength];
 
-                System.out.println(buffer);
-                dataInputStream.readFully(buffer);
+
+                byte[] buffer = new byte[2048];
+
+                int count;
+                long total =0;
+                while ((count=dataInputStream.read(buffer))!= -1){
+                    total += count;
+
+                    fos.write(buffer,0,count);
+                }
+
+
                 dataInputStream.close();
 
-                DataOutputStream fos = new DataOutputStream(new FileOutputStream(file));
-                fos.write(buffer);
+
                 fos.flush();
                 fos.close();
 
@@ -219,7 +267,9 @@ public class EpisodeAdapter extends BaseAdapter {
 
                         for(int i=0;i<fromUser.size();i++){
                             if(fromUser.get(i)!=null) {
-                                recents.add(fromUser.get(i));
+                                if(!recents.contains(fromUser.get(i))) {
+                                    recents.add(fromUser.get(i));
+                                }
                             }
                             System.out.println(fromUser.get(i));
                         }
@@ -237,10 +287,71 @@ public class EpisodeAdapter extends BaseAdapter {
                                     }
                                 });
 
+
+                        userReference.update("watching",watching);
+
                     }
                 }
             }
         });
+
+    }
+
+    public String extractLink(String episodeLink){
+        DownloadPage downloadPage = new DownloadPage();
+        String temp="";
+        String link = "";
+        try {
+            String result = downloadPage.execute(episodeLink).get();
+            Pattern pattern = Pattern.compile("function freeDownload\\(\\)");
+            Matcher m = pattern.matcher(result);
+            while (m.find()){
+                System.out.println(m);
+                temp = result.substring(m.start());
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
+        Pattern linkPattern = Pattern.compile("http:([^\"]*)\"");
+        Matcher matcher = linkPattern.matcher(temp);
+        while (matcher.find()){
+            link = temp.substring(matcher.start(), matcher.end()-1);
+            System.out.println(link);
+            break;
+        }
+
+        return link;
+
+    }
+
+
+
+    class DownloadPage extends AsyncTask<String,String,String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String result = "";
+            try{
+                URL url = new URL(strings[0]);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = urlConnection.getInputStream();
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                int data = reader.read();
+                while (data!= -1){
+                    char current = (char)data;
+                    result += current;
+                    data = reader.read();
+                }
+                return result;
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return null;
+            }
+
+        }
+
 
     }
 

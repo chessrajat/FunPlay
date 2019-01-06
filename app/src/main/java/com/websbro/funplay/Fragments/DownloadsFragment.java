@@ -10,10 +10,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.websbro.funplay.Adapter.DownloadListAdapter;
+import com.websbro.funplay.C;
 import com.websbro.funplay.EpisodeDetails;
 import com.websbro.funplay.R;
 
@@ -25,6 +28,7 @@ public class DownloadsFragment extends Fragment {
 
     Context context;
     ArrayList<EpisodeDetails> downloadedFiles;
+    WebView adView;
     DownloadListAdapter downloadListAdapter;
 
     ListView downloadList;
@@ -35,8 +39,15 @@ public class DownloadsFragment extends Fragment {
         View view = inflater.inflate(R.layout.downloads_fragment,container,false);
         context = getActivity();
         downloadList = view.findViewById(R.id.downloaded_shows);
+        adView = view.findViewById(R.id.download_ad);
         downloadedFiles = new ArrayList<>();
 
+
+        if(C.isConnected(context)) {
+            WebSettings webSettings = adView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            adView.loadUrl("https://downloadbro.com/ad1/");
+        }
         getFiles();
 
 

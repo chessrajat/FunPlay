@@ -31,12 +31,37 @@
         android:textColor="@color/colorPrimary"
         android:textSize="40sp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/search_result"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/search"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
+        android:layout_below="@+id/search"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/search_ad"
+            android:background="@color/colorAccent"
+            android:visibility="gone"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="20sp"
+            android:text="Advertise here contact in feedback option"
+            android:layout_width="match_parent"
+            android:layout_height="180dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/search_result"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
+
+
+
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>
