@@ -67,6 +67,7 @@ public class PlayerActivity extends AppCompatActivity implements SimpleExoPlayer
         uri = Uri.parse(intent.getStringExtra("link"));
         String title = intent.getStringExtra("title");
 
+
         titleView.setText(title);
 
 
@@ -159,16 +160,19 @@ public class PlayerActivity extends AppCompatActivity implements SimpleExoPlayer
 
     }
 
+
     private MediaSource buildMediaSource (Uri uri) {
+        //having crash
 
-        Cache cache = new SimpleCache(getCacheDir(),new LeastRecentlyUsedCacheEvictor(52428800));
-        DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(this,"funplay");
-
-        CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(cache,defaultDataSourceFactory);
-        return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
-//            return new ExtractorMediaSource.Factory(
-//                    new DefaultDataSourceFactory(this, "funPlay")).
-//                    createMediaSource(uri);
+//        Cache cache = new SimpleCache(getCacheDir(),new LeastRecentlyUsedCacheEvictor(52428800));
+//
+//        DefaultDataSourceFactory defaultDataSourceFactory = new DefaultDataSourceFactory(this,"funplay");
+//
+//        CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(cache,defaultDataSourceFactory);
+//        return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
+            return new ExtractorMediaSource.Factory(
+                    new DefaultDataSourceFactory(this, "funPlay")).
+                    createMediaSource(uri);
 
 
 

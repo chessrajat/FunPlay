@@ -16,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -57,6 +58,10 @@ public class HomeFragment extends Fragment {
     RecyclerView popularShows;
     RecyclerView genre1;
     RecyclerView genre2;
+    RecyclerView genre3;
+    RecyclerView genre4;
+    RecyclerView genre5;
+
     RecyclerView similar1;
     RecyclerView similar2;
     RecyclerView similar3;
@@ -80,8 +85,6 @@ public class HomeFragment extends Fragment {
     Random random;
     ImageView bigHome;
     TextView bigHomeName;
-    WebView homeAdView1;
-    WebView homeADView2;
 
     TextView lastWatched;
     TextView lastWatchedEpisode;
@@ -100,8 +103,6 @@ public class HomeFragment extends Fragment {
         random = new Random();
         bigHome = view.findViewById(R.id.home_big);
         bigHomeName = view.findViewById(R.id.home_big_name);
-        homeAdView1 = view.findViewById(R.id.home_ad1);
-        homeADView2 = view.findViewById(R.id.home_ad2);
 
         initFirestore();
 
@@ -110,6 +111,10 @@ public class HomeFragment extends Fragment {
 
         genre1 = view.findViewById(R.id.genres1);
         genre2 = view.findViewById(R.id.genres2);
+        genre3 = view.findViewById(R.id.genres3);
+        genre4 = view.findViewById(R.id.genres4);
+        genre5 = view.findViewById(R.id.genres5);
+
         similar1 = view.findViewById(R.id.similar1);
         similar2 = view.findViewById(R.id.similar2);
         similar3 = view.findViewById(R.id.similar3);
@@ -140,14 +145,7 @@ public class HomeFragment extends Fragment {
         lastWatched = view.findViewById(R.id.last_watched);
 
         //ads
-        if(C.isConnected(context)) {
-            WebSettings homeAd1 = homeAdView1.getSettings();
-            homeAd1.setJavaScriptEnabled(true);
-            homeAdView1.loadUrl("https://downloadbro.com/ad1/");
-            WebSettings homeAd2 = homeADView2.getSettings();
-            homeAd2.setJavaScriptEnabled(true);
-            homeADView2.loadUrl("https://downloadbro.com/ad1/");
-        }
+
 
         popularShows = view.findViewById(R.id.popular);
         popularShowsArrayList = new ArrayList<>();
@@ -155,17 +153,27 @@ public class HomeFragment extends Fragment {
 
         getContent("10759",genre1);
         getContent("10765",genre2);
+        getContent("35",genre3);
+        getContent("18",genre4);
+        getContent("9648",genre5);
+
 
 
 
 
         getPopular();
-        showAllSimilar();
+
+        mAuth = FirebaseAuth.getInstance();
+        if(mAuth!= null) {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+                showAllSimilar();
+        }
 
 
 
         return view;
     }
+
 
 
     public void showAllSimilar(){
@@ -255,51 +263,54 @@ public class HomeFragment extends Fragment {
     }
 
     public void getSililar(String tvId, final String showName, final RecyclerView recyclerView, final TextView textView){
-        TvDataService tvDataService = RetrofitInstance.getService();
-        Call<SimilarShows> similarShowsCall = tvDataService.getSililar(tvId,getString(R.string.api_key));
 
-        similarShowsCall.enqueue(new Callback<SimilarShows>() {
-            @Override
-            public void onResponse(Call<SimilarShows> call, Response<SimilarShows> response) {
-                final ArrayList<TvShow> similarShowlist = new ArrayList<>();
-                SimilarShows similarShows = response.body();
-                System.out.println(similarShows);
-                if(similarShows !=null && similarShows.getResults() !=null){
-                    List<TvShow> tv = similarShows.getResults();
-                    for(final TvShow t : tv){
-                        if(t.getPosterPath()!=null){
-                            DocumentReference documentReference = tvCollection.document(t.getId().toString());
-                            documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        DocumentSnapshot documentSnapshot = task.getResult();
-                                        if(documentSnapshot.exists()) {
-                                            similarShowlist.add(t);
-                                            showinRecycler(similarShowlist,recyclerView);
-                                            if(similarShowlist.size()>0){
-                                                textView.setText("Because you watched - \n" + showName);
-                                                textView.setVisibility(View.VISIBLE);
+
+            TvDataService tvDataService = RetrofitInstance.getService();
+            Call<SimilarShows> similarShowsCall = tvDataService.getSililar(tvId, getString(R.string.api_key));
+
+            similarShowsCall.enqueue(new Callback<SimilarShows>() {
+                @Override
+                public void onResponse(Call<SimilarShows> call, Response<SimilarShows> response) {
+                    final ArrayList<TvShow> similarShowlist = new ArrayList<>();
+                    SimilarShows similarShows = response.body();
+                    System.out.println(similarShows);
+                    if (similarShows != null && similarShows.getResults() != null) {
+                        List<TvShow> tv = similarShows.getResults();
+                        for (final TvShow t : tv) {
+                            if (t.getPosterPath() != null) {
+                                DocumentReference documentReference = tvCollection.document(t.getId().toString());
+                                documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot documentSnapshot = task.getResult();
+                                            if (documentSnapshot.exists()) {
+                                                similarShowlist.add(t);
+                                                showinRecycler(similarShowlist, recyclerView);
+                                                if (similarShowlist.size() > 0) {
+                                                    textView.setText("Because you watched - \n" + showName);
+                                                    textView.setVisibility(View.VISIBLE);
+                                                }
+                                            } else {
+                                                System.out.println("not available");
                                             }
-                                        }else {
-                                            System.out.println("not available");
                                         }
                                     }
-                                }
-                            });
+                                });
 
 
+                            }
                         }
+
                     }
+                }
+
+                @Override
+                public void onFailure(Call<SimilarShows> call, Throwable t) {
 
                 }
-            }
+            });
 
-            @Override
-            public void onFailure(Call<SimilarShows> call, Throwable t) {
-
-            }
-        });
     }
 
 

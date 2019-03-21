@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -79,7 +80,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if(v.getId()==R.id.sign_in_button){
             signIn();
+        }else if(v.getId() == R.id.continue_without_login){
+            updateUi();
         }
+    }
+
+    public void withOutLogin(View view){
+        updateUi();
     }
 
     @Override
@@ -137,6 +144,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
+                Toast.makeText(this, "Failed to login", Toast.LENGTH_SHORT).show();
                 Log.w("d", "Google sign in failed", e);
                 // ...
             }
@@ -172,7 +180,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                             }
                                         }
                                         User user = new User(currentUser.getEmail(),currentUser.getDisplayName(),
-                                                currentUser.getPhotoUrl().toString(),null,new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
+                                                currentUser.getPhotoUrl().toString(),watching,new ArrayList<String>(),new ArrayList<String>(),recentTvShows);
                                         users.document(currentUser.getUid()).set(user);
                                         updateUi();
                                     }

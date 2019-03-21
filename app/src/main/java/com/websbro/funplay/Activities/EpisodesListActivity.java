@@ -176,7 +176,7 @@ public class EpisodesListActivity extends AppCompatActivity {
                     DocumentSnapshot snapshot = task.getResult();
                     if(snapshot.exists()) {
                         episodeDetails.clear();
-                        String season = "season" + s.charAt(s.length() - 1);
+                        String season = "season" + s.substring(1);
                         String name = snapshot.getString("Name");
                         HashMap<String, String> episode = (HashMap<String, String>) snapshot.get(s);
                         for (String e : episode.keySet()) {

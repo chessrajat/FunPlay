@@ -37,15 +37,13 @@
         android:layout_below="@+id/search"
         android:layout_height="match_parent">
 
-        <TextView
+        <ImageView
             android:id="@+id/search_ad"
+            android:scaleType="fitXY"
             android:background="@color/colorAccent"
             android:visibility="gone"
-            android:textColor="@color/colorPrimary"
             android:gravity="center"
-            android:textSize="20sp"
             android:padding="20sp"
-            android:text="Advertise here contact in feedback option"
             android:layout_width="match_parent"
             android:layout_height="180dp" />
 

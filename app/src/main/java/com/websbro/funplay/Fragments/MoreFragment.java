@@ -13,15 +13,18 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1beta1.FirestoreGrpc;
 import com.websbro.funplay.Activities.DMCA;
 import com.websbro.funplay.Activities.FeedbackActivity;
 import com.websbro.funplay.Activities.NewsActivity;
@@ -58,8 +61,12 @@ public class MoreFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        getProfile();
+
+        if(currentUser!=null) {
+            getProfile();
+        }
 
         dmca.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,8 +92,8 @@ public class MoreFragment extends Fragment {
                     i.setType("text/plain");
                     i.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
                     String sAux = "\nBest appication to watch Tv shows for free. New added daily\n\n";
-                    sAux = sAux + "http://funplay.gq/assets/funplay.apk";
-                    i.putExtra(Intent.EXTRA_TEXT, sAux);
+                    sAux = sAux + "http://funplay.gq/";
+                    i.putExtra(Intent.EXTRA_TEXT,sAux);
                     startActivity(Intent.createChooser(i, "Share"));
                 } catch(Exception e) {
                     System.out.println(e.getMessage());
@@ -94,42 +101,51 @@ public class MoreFragment extends Fragment {
             }
         });
 
-        feedback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
-                animation1.setDuration(800);
-                v.startAnimation(animation1);
+        if(currentUser!=null) {
+            feedback.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                    animation1.setDuration(800);
+                    v.startAnimation(animation1);
 
-                Intent intent = new Intent(context,FeedbackActivity.class);
-                context.startActivity(intent);
-            }
-        });
+                    Intent intent = new Intent(context, FeedbackActivity.class);
+                    context.startActivity(intent);
+                }
+            });
 
-        news.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
-                animation1.setDuration(800);
-                v.startAnimation(animation1);
+            news.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                    animation1.setDuration(800);
+                    v.startAnimation(animation1);
 
-                Intent intent = new Intent(context,NewsActivity.class);
-                context.startActivity(intent);
-            }
-        });
+                    Intent intent = new Intent(context,NewsActivity.class);
+                    context.startActivity(intent);
+                }
+            });
 
-        logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
-                animation1.setDuration(800);
-                v.startAnimation(animation1);
 
-                mAuth.signOut();
-                Intent intent = new Intent(context,SignInActivity.class);
-                context.startActivity(intent);
-            }
-        });
+            logOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Animation animation1 = new AlphaAnimation(0.3f, 1.0f);
+                    animation1.setDuration(800);
+                    v.startAnimation(animation1);
+
+                    mAuth.signOut();
+                    Intent intent = new Intent(context,SignInActivity.class);
+                    context.startActivity(intent);
+                }
+            });
+
+        }else {
+            logOut.setVisibility(View.GONE);
+            Toast.makeText(context,"Login first",Toast.LENGTH_SHORT).show();
+        }
+
+
 
         return view;
     }

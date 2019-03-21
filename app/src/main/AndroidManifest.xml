@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.WithOutLoginMain"></activity>
         <activity
             android:name=".Activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -37,7 +38,7 @@
             android:screenOrientation="sensorLandscape" />
         <activity android:name=".Activities.DMCA" />
         <activity android:name=".Activities.FeedbackActivity" />
-        <activity android:name=".Activities.NewsActivity"></activity>
+        <activity android:name=".Activities.NewsActivity" />
     </application>
 
 </manifest>

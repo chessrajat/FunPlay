@@ -17,6 +17,7 @@
         android:inputType="textMultiLine"
         android:gravity="top"
         android:maxLines="20"
+        android:textColor="@color/colorPrimary"
         android:textColorHint="@color/colorPrimary"
         android:hint="Your valueable feedback"
         android:layout_width="match_parent"
